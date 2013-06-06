@@ -1,0 +1,250 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css" >
+
+    <!-- JS Code -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/custom-form-elements.js"></script>
+
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+	<div class="content">
+
+
+		{{>contacts}}
+
+
+		<!-- SECOND-COLUMN START -->
+		<div class="second-column">
+
+			<div class="wrapper">
+				<div class="title-container">
+					<h1>Contacts</h1>
+					<p>Total: {{totalContacts}}</p>
+				</div>
+
+				<div class="scroll-container scroll-container-contacts">
+                    {{#groups}}
+                    <div data-id="{{groupId}}" class="group-scroll-box">
+                        <div class="checkbox"><input name="groups" value="{{groupId}}" type="checkbox" class="styled" {{#selected}}checked{{/selected}} /></div>
+                        <div class="title">{{name}}</div>
+                        <div class="number">{{stats.count}}</div>
+                    </div>
+                    {{/groups}}
+                </div>
+
+				<div class="push"></div>
+			</div>
+
+			<div class="bottom-area">
+				<ul>
+					<li><a class="add-contacts" href="/contacts/add"><span>Add Contacts</span></a></li>
+					<li><a class="add-group" href="#"><span>Add Group</span></a></li>
+					<li><a class="edit" href="#"><span>Edit</span></a></li>
+					<li><a class="trash" href="#"><span>Delete</span></a></li>
+				</ul>
+			</div>
+
+		</div>
+		<!-- //END SECOND-COLUMN -->
+
+
+		<!-- THIRD-COLUMN START -->
+		<div class="third-column">
+
+			<div class="title-container">
+				<div class="icon group"></div>
+				<div class="title">
+					<h2>Contacts from the selected groups</h2>
+				</div>
+			</div>
+
+			<div class="scroll-container" id="contacts-list">
+			</div>
+
+            <script>
+                jQuery(function ($) {
+                    var timeout;
+                    
+                    $('.group-scroll-box').on('click mousedown mouseup keyup', function () {
+                        var me = $(this),
+                            chk = me.find(':checkbox');
+
+                        chk[0].checked ? me.addClass('active') : me.removeClass('active');
+                        
+                        if(timeout) {
+                            clearTimeout(timeout);
+                        }
+                        
+                        timeout = setTimeout(updateContacts, 200);
+                    }).trigger('mouseup');
+                    
+                    $('.add-group').click(addGroup);
+                    $('.bottom-area .edit').click(editGroup);
+                    $('.bottom-area .trash').click(trashGroup);
+                });
+                
+                var contactGroups = [];
+                $('.group-scroll-box').each(function () {
+                    contactGroups[$(this).attr('data-id')] = $(this).find('.title').text();
+                });
+                
+                function updateContacts() {
+                    var list = $('#contacts-list').empty();
+                    var template = '<div class="contact-scroll-box"><div class="text"><p>[[name]]<span>[[phone]]</span></p><p>in: [[groups]]</p></div></div>';
+                    var groups = [];
+                    
+                    $('.group-scroll-box :checkbox:checked').each(function () {
+                        groups.push($(this).val());
+                    });
+                    
+                    if(groups.length === 0) {
+                        return;
+                    }
+                    
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'json',
+                        url: '/contacts/list',
+                        data: {groups: groups},
+                        success: function (data) {
+                            var num = Math.min(data.length, 2000),
+                                tmpl, person;
+                            
+                            for(var i = 0; i < num; i++) {
+                                person = data[i];
+                                tmpl = template.replace('[[name]]', (person.firstName || ' ') + ' ' + (person.lastName || ' '));
+                                tmpl = tmpl.replace('[[groups]]', person.groupId.map(function (i) {return contactGroups[i];}).join(', '));
+                                tmpl = tmpl.replace('[[phone]]', person.phone);
+                                list.append($(tmpl));
+                            }
+                        },
+                        error: function () {
+                            alert('Could not update view. Please check Internet connection.');
+                        }
+                    });
+                }
+                
+                function addGroup () {
+                    var groupName = prompt('Enter group name');
+                    
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: '/groups',
+                        data: {name: groupName},
+                        success: function (data) {
+                            location.reload();
+                        },
+                        error: function () {
+                            alert('Could not create group. Please check Internet connection.');
+                        }
+                    });
+                }
+                
+                function editGroup () {
+                    var grp = $('.group-scroll-box :checkbox:checked').closest('.group-scroll-box');
+                    
+                    if(grp.length !== 1) {
+                        alert('One and only one group must be selected before clicking edit');
+                        return;
+                    }
+                    
+                    var id = grp.attr('data-id'),
+                        name = grp.find('.title').text();
+                    
+                    console.log(grp);
+                    
+                    var newName = prompt('New name for group', name);
+                    
+                    if(newName && newName !== name) {
+                        $.ajax({
+                            type: 'PUT',
+                            dataType: 'json',
+                            url: '/groups/' + id,
+                            data: {name: newName},
+                            success: function (data) {
+                                grp.find('.title').text(newName);
+                            },
+                            error: function () {
+                                alert('Could not rename group. Please check Internet connection.');
+                            }
+                        });
+                    }
+                }
+                
+                function trashGroup () {
+                    var grp = $('.group-scroll-box :checkbox:checked').closest('.group-scroll-box');
+                    
+                    if(grp.length === 0) {
+                        return;
+                    }
+                    
+                    if(!confirm('Are you sure you want to delete the selected groups?')) {
+                        return;
+                    }
+                    
+                    grp.each(function () {
+                        var me = $(this),
+                            id = me.attr('data-id'),
+                            name = me.find('.title').text();
+                        
+                        $.ajax({
+                            type: 'DELETE',
+                            dataType: 'json',
+                            url: '/groups/' + id,
+                            success: function (data) {
+                                grp.remove();
+                            },
+                            error: function () {
+                                alert('Could not delete group "' + name + '". Please check Internet connection.');
+                            }
+                        });
+                    });
+                }
+            </script>
+
+		</div>
+		<!-- //END THIRD-COLUMN -->
+
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

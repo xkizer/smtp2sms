@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="css/style.css" rel="stylesheet" type="text/css" >
+
+    <!-- JS Code -->
+    <script type="text/javascript" src="js/custom-form-elements.js"></script>
+
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+	<div class="sign-in">
+
+		<div class="floater"></div>
+		<div class="recover">
+			<h1>Welcome back!</h1>
+			<p>Enter your username/email address and your password below in order to sign in to your account.</p>
+
+            <form method="post">
+        		<div class="sign-in-box">
+                {{#error}}<div class="error">{{error}}</div>{{/error}}
+                    <fieldset>
+                        <input type="text" name="username" value="hi@iampiny.com" onfocus="if(this.value == 'hi@iampiny.com') { this.value = ''; }" onblur="if(this.value == '') { this.value = 'hi@iampiny.com'; }">
+                        <input type="password" name="password" value="password" onfocus="if(this.value == 'password') { this.value = ''; }" onblur="if(this.value == '') { this.value = 'password'; }">
+
+                        <input type="submit" value="Sign in">
+                    </fieldset>
+    			</div>
+
+                <div class="remember-me">
+                    <div class="check"><input name="persist" type="checkbox" class="styled" /></div>
+                    <div class="text">Remember me on this computer.</div>
+                </div>
+            </form>
+		</div>
+
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

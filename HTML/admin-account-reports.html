@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="css/style.css" rel="stylesheet" type="text/css" >
+    
+    <!-- JS Code -->
+    <script type="text/javascript" src="js/custom-form-elements.js"></script>
+
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body class="admin">
+
+	<div class="content">
+
+
+		<!-- FIRST-COLUMN START -->
+		<div class="first-column">
+
+			<h1>Admin Panel</h1>
+
+			<ul>
+				<li><a class="active" href="admin-clients.html">Clients</a></li>
+				<li><a href="admin-create-account.html">Create Account</a></li>
+			</ul>
+
+		</div>
+		<!-- //END FIRST-COLUMN -->
+
+		<!-- THIRD-COLUMN START -->
+		<div class="third-column">
+
+			<div class="title-container">
+				<div class="icon chart"></div>
+				<div class="title">
+					<h2>Account Reports</h2>
+				</div>
+				<div class="right">
+					<input type="button" name="button" value="Back" onclick="window.location='admin-account-activity.html'">
+				</div>
+			</div>
+
+			<div class="third-column-container">
+
+				<p>Please select a date range.</p>
+				<input type="text" name="date" value="22 / 05 / 2013" onfocus="if(this.value == '22 / 05 / 2013') { this.value = ''; }" onblur="if(this.value == '') { this.value = '22 / 05 / 2013'; }">
+				-
+				<input type="text" name="date second" value="01 / 06 / 2013" onfocus="if(this.value == '01 / 06 / 2013') { this.value = ''; }" onblur="if(this.value == '') { this.value = '01 / 06 / 2013'; }">
+				<input type="button" name="button" value="Run Report">
+
+				<div class="hr"></div>
+
+				<p>Delivery stat for 01 / 05 / 2013 - 22 / 05 / 2013</p>
+
+				<img src="img/graph-place-holder.png" alt="graph place holder" style="margin: 50px 0px 0px 160px">
+
+			</div>
+
+		</div>
+		<!-- //END THIRD-COLUMN -->
+
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css" >
+
+    <!-- JS Code -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/custom-form-elements.js"></script>
+    
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+	<div class="content">
+
+        {{>contacts}}
+        <form method="post" action="/contacts/upload" enctype="multipart/form-data">
+        {{>groups}}
+        
+		<!-- THIRD-COLUMN START -->
+		<div class="third-column">
+
+			<div class="wrapper">
+				<div class="title-container">
+					<div class="icon upload"></div>
+					<div class="title">
+						<h2>Browse and upload the file</h2>
+					</div>
+				</div>
+
+				<div class="third-column-container">
+                    {{#error}}<div class="error">{{error}}</div>{{/error}}
+                    <input type="text" name="file-name" readonly placeholder="Please select file">
+                    <input type="file" name="file" style="display: none" id="file-upld">
+                    <input class="secondary" id="file-upld-browse" type="button" name="button" value="Browse">
+                    <script>
+                        jQuery(function ($) {
+                            $('#file-upld-browse').click(function () {
+                                $('#file-upld').show().focus()
+                                    .click().hide();
+                            });
+                            
+                            $('#file-upld').change(function () {
+                                var file = this.value;
+                                var filename = file.split(/[\\\/]/)[0];
+                                $('[name="file-name"]').val(filename);
+                            }).change();
+                        });
+                    </script>
+					<p><br>Supported file types: .xls (Microsoft Excel SpreadSheet), .vcf (VCard),<br>and .csv (Comma Separated Values).</p>
+					<p><a href="#">Click here to check the upload format.</a></p>
+				</div>
+			</div>
+
+			<div class="bottom-area">
+				<div class="left">
+					<input class="secondary" type="button" value="Cancel" onclick="window.location='/contacts'">
+				</div>
+				<div class="right">
+					<input type="submit" value="Upload File" onclick="window.location='add-contacts-2.html'">
+				</div>
+			</div>
+
+		</div>
+		<!-- //END THIRD-COLUMN -->
+        </form>
+        
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

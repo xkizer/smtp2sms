@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css" >
+
+    <!-- JS Code -->
+    <script type="text/javascript" src="/js/custom-form-elements.js"></script>
+
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body class="admin">
+
+	<div class="content">
+
+
+{{>adminSidebar}}
+		<!-- THIRD-COLUMN START -->
+		<div class="third-column">
+
+            <form method="post">
+                <div class="wrapper">
+
+                    <div class="title-container">
+                        <div class="icon add-user"></div>
+                        <div class="title">
+                            <h2>Create a New Account</h2>
+                        </div>
+                    </div>
+
+                    <div class="third-column-container">
+                        {{#error}}<div class="error">{{error}}</div>{{/error}}
+                        {{#success}}<div class="done">Account has been created</div>{{/success}}
+                        <p>Account Name:</p>
+                        <input type="text" required name="name" placeholder="Type the account name...">
+
+                        <div class="hr"></div>
+
+                        <p>Password:</p>
+                        <input type="password" pattern=".{6,}" required name="password" placeholder="Type the account password...">
+
+                        <div class="hr"></div>
+
+                        <p>Re-password:</p>
+                        <input type="password" pattern=".{6,}" required name="password2" placeholder="Re-type the password...">
+
+                        <div class="hr"></div>
+
+                        <p>Email Address:</p>
+                        <input type="email" required name="email" placeholder="Type the email address...">
+
+                        <div class="hr"></div>
+                        
+                    </div>
+
+                    <div class="push"></div>
+                </div>
+
+                <div class="bottom-area">
+                    <div class="left">
+                        <input type="submit" value="Create Account">
+                    </div>
+                </div>
+
+            </form>
+					
+		</div>
+		<!-- //END THIRD-COLUMN -->
+
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

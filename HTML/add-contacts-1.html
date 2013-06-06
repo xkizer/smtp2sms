@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="css/style.css" rel="stylesheet" type="text/css" >
+
+    <!-- JS Code -->
+    <script type="text/javascript" src="js/custom-form-elements.js"></script>
+
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+	<div class="content">
+
+
+		<!-- FIRST-COLUMN START -->
+		<div class="first-column">
+
+			<a class="button" href="send-message.html">Send Message</a>
+
+			<ul>
+				<li><a href="contacts.html">Contacts</a></li>
+				<li><a href="inbox.html">Inbox <span>27</span></a></li>
+			</ul>
+
+		</div>
+		<!-- //END FIRST-COLUMN -->
+
+
+		<!-- SECOND-COLUMN START -->
+		<div class="second-column">
+
+			<div class="title-container">
+				<h1>Add Contacts</h1>
+				<p>Upload Contacts From a File</p>
+			</div>
+
+			<div class="info-container">
+				<div class="icon"></div>
+				<div class="text">
+					Choose the groups you want to add the contacts to.
+				</div>
+			</div>
+
+			<div class="scroll-container scroll-container-info">
+
+				<div class="group-scroll-box">
+					<div class="checkbox"><input type="checkbox" class="styled" /></div>
+					<div class="title">Facebook Opt-ins</div>
+					<div class="number">415</div>
+				</div>
+
+				<div class="group-scroll-box active">
+					<div class="checkbox"><input type="checkbox" class="styled" /></div>
+					<div class="title">Survey Leads</div>
+					<div class="number">278</div>
+				</div>
+
+				<div class="group-scroll-box">
+					<div class="checkbox"><input type="checkbox" class="styled" /></div>
+					<div class="title">Admin Group</div>
+					<div class="number">62</div>
+				</div>
+
+				<div class="group-scroll-box">
+					<div class="checkbox"><input type="checkbox" class="styled" /></div>
+					<div class="title">February Leads</div>
+					<div class="number">153</div>
+				</div>
+
+				<div class="group-scroll-box active">
+					<div class="checkbox"><input type="checkbox" class="styled" /></div>
+					<div class="title">Misc Group</div>
+					<div class="number">129</div>
+				</div>
+
+				<div class="group-scroll-box">
+					<div class="checkbox"><input type="checkbox" class="styled" /></div>
+					<div class="title">Twitter Campaign</div>
+					<div class="number">361</div>
+				</div>
+
+				<div class="group-scroll-box">
+					<div class="checkbox"><input type="checkbox" class="styled" /></div>
+					<div class="title">Others</div>
+					<div class="number">48</div>
+				</div>
+
+			</div>
+
+		</div>
+		<!-- //END SECOND-COLUMN -->
+
+
+		<!-- THIRD-COLUMN START -->
+		<div class="third-column">
+
+			<div class="wrapper">
+				<div class="title-container">
+					<div class="icon upload"></div>
+					<div class="title">
+						<h2>Browse and upload the file</h2>
+					</div>
+				</div>
+
+				<div class="third-column-container">
+
+					<input type="text" name="phone-number" value="Type here your phone number..." onfocus="if(this.value == 'Type here your phone number...') { this.value = ''; }" onblur="if(this.value == '') { this.value = 'Type here your phone number...'; }">
+					<input class="secondary" type="button" name="button" value="Preview">
+					
+					<p><br>Supported file types: .xls (Microsoft Excel SpreadSheet), .vcf (VCard),<br>and .csv (Comma Separated Values).</p>
+					<p><a href="#">Click here to check the upload format.</a></p>
+				</div>
+
+				<div class="push"></div>
+			</div>
+
+			<div class="bottom-area">
+				<div class="left">
+					<input class="secondary" type="button" name="send" value="Cancel" onclick="window.location='contacts.html'">
+				</div>
+				<div class="right">
+					<input type="button" name="send" value="Upload File" onclick="window.location='add-contacts-2.html'">
+				</div>
+			</div>
+
+		</div>
+		<!-- //END THIRD-COLUMN -->
+
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

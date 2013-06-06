@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css" >
+
+    <!-- JS Code -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/custom-form-elements.js"></script>
+
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body class="admin">
+
+	<div class="content">
+
+
+        {{>adminSidebar}}
+
+		<!-- THIRD-COLUMN START -->
+		<div class="third-column">
+
+			<div class="title-container">
+				<div class="icon users"></div>
+				<div class="title">
+					<h2>Filter Clients</h2>
+				</div>
+				<div class="right">
+					<form>
+						<input type="text" name="search" value="Search for clients..." onfocus="if(this.value == 'Search for clients...') { this.value = ''; }" onblur="if(this.value == '') { this.value = 'Search for clients...'; }">
+						<input type="button" name="button" value="Search">
+					</form>
+				</div>
+			</div>
+
+			<div class="third-column-container">
+
+				<div class="table-header">
+					<table>
+						<tr>
+							<th class="t1">Login</th>
+							<th class="t2">Account Name</th>
+							<th class="t3">Messages<br>Sent Today</th>
+							<th class="t3">Messages<br>Sent Total</th>
+							<th class="t3">Contacts</th>
+							<th class="t3">Credits</th>
+						</tr>
+					</table>
+				</div>
+
+				<div class="scroll-container scroll-container-table">
+					<table>
+                        {{#clients}}
+						<tr data-id="{{userId}}">
+							<td class="t1"><a href="/admin/login/{{userId}}"><img src="/img/icon-login.png" alt="login"></a></td>
+							<td class="t2"><a href="/admin/account/activity/{{userId}}">{{email}}</a></td>
+							<td class="t3">{{sentToday}}</td>
+							<td class="t3">{{sentTotal}}</td>
+							<td class="t3">{{totalContacts}}</td>
+							<td class="t3"><a href="#" class="add-credits"><span>{{credits}}</span></a></td>
+						</tr>
+                        {{/clients}}
+					</table>
+				</div>
+
+			</div>
+
+		</div>
+		<!-- //END THIRD-COLUMN -->
+
+	</div>
+    
+    <script>
+        jQuery(function ($) {
+            $('.add-credits').click(function (e) {
+                e.preventDefault();
+                
+                var me = $(this),
+                    id = me.closest('tr').attr('data-id'),
+                    current = me.text();
+                
+                var amount = prompt('Enter the new amount', current);
+                
+                if(!/^[0-9]+$/.test(amount)) {
+                    alert('Please enter a valid amount');
+                    return;
+                }
+                
+                me.text(amount);
+                
+                $.ajax({
+                    url: '/admin/clients/' + id + '/credits/add/',
+                    type: 'put',
+                    data: {amount: amount},
+                    dataType: 'json',
+                    success: function () {
+                        // Nothing to do
+                    },
+                    error: function () {
+                        me.text(current);
+                        alert('Could not set the amount. Please check your connection and try again.');
+                    }
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>

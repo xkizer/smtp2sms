@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css" >
+
+    <!-- JS Code -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/custom-form-elements.js"></script>
+
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+	<div class="content">
+
+
+		{{>contacts}}
+
+
+        <form method="post" id="message-send">
+            <!-- SECOND-COLUMN START -->
+            <div class="second-column">
+
+                <div class="title-container">
+                    <h1>Send Message</h1>
+                    <p>Total contacts selected: 407</p>
+                </div>
+
+                <div class="info-container">
+                    <div class="icon"></div>
+                    <div class="text">
+                        Select the groups you want to send the message to.
+                    </div>
+                </div>
+
+                <div class="scroll-container scroll-container-info">
+                    {{#groups}}
+                    <div data-id="{{groupId}}" class="group-scroll-box">
+                        <div class="checkbox"><input name="groups" value="{{groupId}}" type="checkbox" class="styled" {{#selected}}checked{{/selected}} /></div>
+                        <div class="title">{{name}}</div>
+                        <div class="number">{{stats.count}}</div>
+                    </div>
+                    {{/groups}}
+                </div>
+
+            </div>
+            <!-- //END SECOND-COLUMN -->
+
+
+            <!-- THIRD-COLUMN START -->
+            <div class="third-column">
+                
+                <div class="wrapper">
+                    <div class="title-container">
+                        <div class="icon mail"></div>
+                        <div class="title">
+                            <h2>Create a New Message</h2>
+                        </div>
+                    </div>
+
+                    <div class="third-column-container">
+                        {{#error}}<div class="error">{{error}}</div>{{/error}}
+                        {{#success}}<div class="success">{{success}}</div>{{/success}}
+                        <p>Type your message below.</p>
+                        <textarea name="message" placeholder="Type here...">{{data.message}}</textarea>
+                        <div class="counters">
+                            <p>Message Count : <span>1</span></p>
+                            <p>Character Count : <span>0/{{maxLength}}</span></p>
+                        </div>
+
+                        <div class="hr"></div>
+
+                    </div>
+
+                    <div class="push"></div>
+                </div>
+
+                <div class="bottom-area">
+                    <div class="right">
+                        <input type="submit" name="send" value="Send it">
+                    </div>
+                </div>
+
+            </div>
+            <!-- //END THIRD-COLUMN -->
+
+        </form>
+
+	</div>
+
+    <script>
+        jQuery(function ($) {
+            $('.group-scroll-box').on('click mousedown mouseup keyup', function () {
+                var me = $(this),
+                    chk = me.find(':checkbox');
+
+                chk[0].checked ? me.addClass('active') : me.removeClass('active');
+            }).trigger('mouseup');
+            
+            var txt = $('textarea');
+            var counter = $('.counters p:nth-child(2) span');
+            
+            txt.on('keyup mouseup change', function () {
+                var numChars = txt.val().length;
+                counter.text(numChars + '/{{maxLength}}');
+                
+                if(numChars > {{maxLength}}) {
+                    counter.css({color: 'red'});
+                } else {
+                    counter.css({color: ''});
+                }
+            }).change();
+            
+            $('#message-send').submit(function () {
+                if(txt.val().length > {{maxLength}}) {
+                    alert('Message length must be less than {{maxLength}} characters');
+                    return false;
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,39 @@
+
+		<!-- SECOND-COLUMN START -->
+		<div class="second-column">
+
+			<div class="title-container">
+				<h1>Add Contacts</h1>
+				<p>Upload Contacts From a File</p>
+			</div>
+
+			<div class="info-container">
+				<div class="icon"></div>
+				<div class="text">
+					Choose the groups you want to add the contacts to.
+				</div>
+			</div>
+
+			<div class="scroll-container scroll-container-info">
+                {{#groups}}
+				<div data-id="{{groupId}}" class="group-scroll-box">
+                    <div class="checkbox"><input name="groups" value="{{groupId}}" type="checkbox" class="styled" {{#selected}}checked{{/selected}} /></div>
+					<div class="title">{{name}}</div>
+					<div class="number">{{stats.count}}</div>
+				</div>
+                {{/groups}}
+			</div>
+
+		</div>
+		<!-- //END SECOND-COLUMN -->
+
+    <script>
+        jQuery(function ($) {
+            $('.group-scroll-box').on('click mousedown mouseup keyup', function () {
+                var me = $(this),
+                    chk = me.find(':checkbox');
+                
+                chk[0].checked ? me.addClass('active') : me.removeClass('active');
+            }).trigger('mouseup');
+        });
+    </script>

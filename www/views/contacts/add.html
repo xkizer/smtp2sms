@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css" >
+
+    <!-- JS Code -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/custom-form-elements.js"></script>
+
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+	<div class="content">
+
+        {{>contacts}}
+        <form method="post">
+            {{>groups}}
+
+            <!-- THIRD-COLUMN START -->
+            <div class="third-column">
+
+                <div class="wrapper">
+                    <div class="title-container">
+                        <div class="icon group-edit"></div>
+                        <div class="title">
+                            <h2>Select the corresponding subscriber fields</h2>
+                        </div>
+                    </div>
+
+                    <div class="third-column-container">
+
+                        <div class="dropdown">
+                            <select class="styled" name="col1">
+                                <option value="firstName">First Name</option>
+                                <option value="lastName">Last Name</option>
+                                <option value="phone">Mobile Number</option>
+                            </select>
+                        </div>
+
+                        <div class="dropdown">
+                            <select class="styled" name="col2">
+                                <option value="firstName">First Name</option>
+                                <option value="lastName">Last Name</option>
+                                <option value="phone">Mobile Number</option>
+                            </select>
+                        </div>
+
+                        <div class="dropdown">
+                            <select class="styled" name="col3">
+                                <option value="firstName">First Name</option>
+                                <option value="lastName">Last Name</option>
+                                <option value="phone">Mobile Number</option>
+                            </select>
+                        </div>
+
+                    {{#error}}<div class="error">{{error}}</div>{{/error}}
+                    </div>
+
+                    <div class="scroll-container scroll-container-table">
+                        <table>
+                            {{#samples}}
+                            <tr>
+                                <td>{{col1}}</td>
+                                <td>{{col2}}</td>
+                                <td>{{col3}}</td>
+                            </tr>
+                            {{/samples}}
+                        </table>
+                    </div>
+
+                    <div class="push"></div>
+                </div>
+
+                <div class="bottom-area">
+                    <div class="left">
+                        <input class="secondary" type="button" name="send" value="Cancel" onclick="window.location='/contacts'">
+                    </div>
+                    <div class="right">
+                        <input type="submit" value="Add Contacts">
+                    </div>
+                </div>
+
+            </div>
+            <!-- //END THIRD-COLUMN -->
+
+        </form>
+        
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

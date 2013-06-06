@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Web App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS Files -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css" >
+
+    <!-- JS Code -->
+    <script type="text/javascript" src="/js/custom-form-elements.js"></script>
+
+    <!-- FONT Files -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700' rel='stylesheet' type='text/css'>
+
+</head>
+<body class="admin">
+
+	<div class="content">
+
+        {{>adminSidebar}}
+
+		<!-- THIRD-COLUMN START -->
+		<div class="third-column">
+
+			<div class="title-container">
+				<div class="icon user"></div>
+				<div class="title">
+					<h2>Account Activity</h2>
+				</div>
+				<div style="display: none" class="right">
+					<input type="button" name="button" value="Delivery Reports" onclick="window.location='admin-account-reports.html'">
+				</div>
+			</div>
+
+			<div class="third-column-container">
+
+				<div class="table-header">
+					<table>
+						<tr>
+							<th class="a1">Date / Time</th>
+							<th class="a2">Activity</th>
+						</tr>
+					</table>
+				</div>
+
+				<div class="scroll-container scroll-container-table">
+					<table>
+                        {{#activities}}
+						<tr>
+							<td class="a1">{{dateString}}</td>
+							<td class="a2">{{message}}</td>
+						</tr>
+                        {{/activities}}
+					</table>
+				</div>
+
+			</div>
+
+		</div>
+		<!-- //END THIRD-COLUMN -->
+
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
