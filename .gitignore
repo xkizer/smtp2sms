@@ -1,2 +1,10 @@
-/www/node_modules/
 /dump.tar.gz
+/www/node_modules/simplesmtp/
+/www/node_modules/.bin/
+/www/node_modules/express/
+/www/node_modules/redis/
+/www/node_modules/hogan-express/
+/www/node_modules/csv/
+/www/node_modules/mongodb/
+/www/node_modules/nodemailer/
+/www/node_modules/cli-color/
