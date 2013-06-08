@@ -13,10 +13,8 @@ var smtp = simplesmtp.createServer({
 });
 
 smtp.listen(25, function () {
-    console.log('Listening on PORT 25 and 465');
+    console.log('Listening on PORT 25');
 });
-
-smtp.listen(465);
 
 smtp.on("startData", function(connection){
     console.log("Message from:", connection.from);
