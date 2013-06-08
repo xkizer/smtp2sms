@@ -7,5 +7,5 @@ module.exports = {
     maxMessageLength: 145,
     
     // Host that the "from" field will reflect
-    host: 'kizer.com.ng'
+    host: 'smtp2sms.kizer.com.ng'
 };
