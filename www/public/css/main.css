@@ -886,5 +886,5 @@ form {
 .admin .third-column input[name~="second"] { margin-left:3px; }
 #credits-remaining {
     color: #fff;
-    margin-bottom: 12px;
+    margin: 30px 0;
 }

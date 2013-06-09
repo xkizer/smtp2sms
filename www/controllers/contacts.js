@@ -8,6 +8,9 @@ db.mongoConnect({db: 'mail2sms', collection: 'contacts'}, function (err, cnt, db
     if(err) {
         throw err;
     }
+    
+    contactsCollection = cnt;
+    mongo = db;
 });
 
 module.exports = {

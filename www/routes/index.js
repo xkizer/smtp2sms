@@ -353,7 +353,7 @@ function addGroupForm (req, res, next) {
             }
         }
 
-        res.render('user/add-group', {error: err && (err.message || err), success: success, addGroup: true});
+        res.render('user/add-group', {user: user.userData, error: err && (err.message || err), success: success, addGroup: true});
     });
 }
 
@@ -424,7 +424,7 @@ function uploadContactsForm (req, res, next) {
                 err = error;
             }
             
-            res.render('contacts/upload', {groups: groups, error: err && (err.message || err)});
+            res.render('contacts/upload', {user: user.userData, groups: groups, error: err && (err.message || err)});
         });
     });
 }
@@ -561,7 +561,7 @@ function addContactsForm(req, res, next) {
                         }
                     });
                     
-                    res.render('contacts/add', {error: error, groups: groups, uploadId: uploadId, samples: samples});
+                    res.render('contacts/add', {user: user.userData, error: error, groups: groups, uploadId: uploadId, samples: samples});
                 });
             });
         });
@@ -644,7 +644,7 @@ function listContacts (req, res, next) {
                     err = error;
                 }
                 
-                res.render('contacts/contacts', {totalContacts: count, groups: groups, error: err && (err.message || err)});
+                res.render('contacts/contacts', {user: user.userData, totalContacts: count, groups: groups, error: err && (err.message || err)});
             });
         });
     });
@@ -678,7 +678,7 @@ function sendMessageForm (req, res, next) {
                 err = error;
             }
             
-            res.render('messages/send', {data: req.body, groups: groups, maxLength: config.maxMessageLength, error: err && (err.message || err), success: success});
+            res.render('messages/send', {user: user.userData, data: req.body, groups: groups, maxLength: config.maxMessageLength, error: err && (err.message || err), success: success});
         });
     });
 }
