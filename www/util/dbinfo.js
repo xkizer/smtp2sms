@@ -6,9 +6,10 @@ module.exports = {
             db:     'mail2sms',
             auth:   {
                 username: 'mail2sms',
-                password: '\/xRNo>*Yh>-]x/HI#Lhu<!j'
+                password: 'ARfZH|CW1%:ixEk>zpW,9KIO%cM/px04&h;@>jQO'
             },
             collections: ['users','contacts','groups','groups.stats','contacts.tmp','messages.log', 'activities.log','message.log']
         }
     }
 };
+

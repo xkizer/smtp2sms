@@ -30,45 +30,59 @@ exports.mongoConnect = function(data, callback) {
     
     // Get the database requested
     var dbinfo = require('./dbinfo.js');
-    db = dbinfo.mongo[dbname];
+    info = dbinfo.mongo[dbname];
     
-    if(!db) {
+    if(!info) {
         return callback('Unknown database ' + dbname);
     }
     
     // We check if the collection is in the list of our collections...
     // Prevents accidental discharge
-    if(collection && db.collections.indexOf(collection) < 0) {
+    if(collection && info.collections.indexOf(collection) < 0) {
         return callback('Collection ' + collection + ' not in the list of supported collections for this DB.');
     }
     
     var mongodb = require("mongodb"),
-        mongoserver = new mongodb.Server(db.host, db.port, options),
-        connector = new mongodb.Db(db.db, mongoserver, options);
+        mongoserver = new mongodb.Server(info.host, info.port, options),
+        connector = new mongodb.Db(info.db, mongoserver, options);
 
     connector.open(function(err, db) {
         if(err) {
             return callback(err);
         }
         
-        // When the connection closes, remove from cache
-        db.on('close', function () {
-            delete mongoCache[cacheStr];
-        });
-        
-        if(!collection) {
-            mongoCache[cacheStr] = {db: db};
-            return callback(null, db);
+        if(info.auth) {
+            db.authenticate(info.auth.username, info.auth.password, function (err) {
+                if(err) {
+                    return callback(err);
+                }
+                
+                doContinue();
+            });
+        } else {
+            doContinue();
         }
         
-        db.collection(collection, function(err, collection) {
-            if(err) {
-                return callback(err);
+        function doContinue() {
+            // When the connection closes, remove from cache
+            db.on('close', function () {
+                delete mongoCache[cacheStr];
+            });
+
+            if(!collection) {
+                mongoCache[cacheStr] = {db: db};
+                return callback(null, db);
             }
-            
-            mongoCache[cacheStr] = {db: db, collection: collection};
-            return callback(null, collection, db);
-        });
+
+            db.collection(collection, function(err, collection) {
+                if(err) {
+                    return callback(err);
+                }
+
+                mongoCache[cacheStr] = {db: db, collection: collection};
+                return callback(null, collection, db);
+            });
+        }
     });
 };
 
