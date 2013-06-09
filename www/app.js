@@ -32,7 +32,7 @@ app.configure(function(){
   app.set('port', parseInt(process.env.PORT) || 3200);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'html');
-  app.use(express.cookieParser({secret: '}t\!|R0_uOSeP8ao.80:<z*`'}));
+  app.use(express.cookieParser({secret: '(-m$ZNpa+[5V#)n6T!T7jh2_4w39i&h5k0Tl=ESmSbc[Q[Ee'}));
   app.use(express.logger(logger));
   app.use(express.bodyParser());
   app.use(session.middleware);

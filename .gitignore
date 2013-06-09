@@ -8,3 +8,6 @@
 /www/node_modules/mongodb/
 /www/node_modules/nodemailer/
 /www/node_modules/cli-color/
+/dump-2.tar.gz
+/dump/
+/dump-0/

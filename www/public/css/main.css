@@ -884,3 +884,7 @@ form {
   text-align:center;
 }
 .admin .third-column input[name~="second"] { margin-left:3px; }
+#credits-remaining {
+    color: #fff;
+    margin-bottom: 12px;
+}

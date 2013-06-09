@@ -1,8 +1,8 @@
 module.exports = {
     mongo: {
         mail2sms: {
-            host:   '127.0.0.1',
-            port:   27017,
+            host:   process.env.MONGO_HOST || '127.0.0.1',
+            port:   process.env.MONGO_PORT || 27017,
             db:     'mail2sms',
             auth:   {
                 username: 'mail2sms',
