@@ -77,9 +77,9 @@ function forwardMessage (connection) {
     var to = connection.to;
     
     to.forEach(function (to) {
-        var host = to[1];
-        to = to.split('@');
         var user = to;
+        to = to.split('@');
+        var host = to[1];
         
         clientConnect(host, function (err, client) {
             if(err) {
