@@ -116,7 +116,7 @@ function forwardMessage (connection) {
 }
 
 function clientConnect (host, callback) {
-    var client = simplesmptp.connect(25, host, {
+    var client = simplesmtp.connect(25, host, {
         name: config.host,
         debug: true
     });
