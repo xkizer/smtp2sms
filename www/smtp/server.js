@@ -3,7 +3,8 @@ var simplesmtp = require("simplesmtp"),
     config = require('../config'),
     util = require('../util/util'),
     contacts = require('../controllers/contacts'),
-    cli = require('cli-color');
+    cli = require('cli-color'),
+    dns = require('dns');
 
 var smtp = simplesmtp.createServer({
     debug: true,
@@ -81,35 +82,48 @@ function forwardMessage (connection) {
         to = to.split('@');
         var host = to[1];
         
-        clientConnect(host, function (err, client) {
-            if(err) {
-                console.log('CONNECTION TO %s FAILED', host);
+        dns.resolveMx(host, function (err, mx) {
+            if(err || !mx || !mx.length) {
+                console.log('Unable to find MX record for %s', host);
                 return;
             }
             
-            console.log('CONNECTED TO %s', host);
-            
-            client.on("rcptFailed", function(addresses){
-                console.log("The following addresses were rejected: ", addresses);
+            mx.sort(function (a, b) {
+                return a.priority - b.priority;
             });
             
-            client.on("message", function(){
-                console.log('SENDING OUT MESSAGE');
-                client.write(connection.data);
-                client.end();
-            });
-            
-            client.on("ready", function(success, response){
-                if(success){
-                    console.log("The message was transmitted successfully with "+response);
-                } else {
-                    console.log('MESSAGE FAILED', arguments);
+            host = mx[0].exchange;
+
+            clientConnect(host, function (err, client) {
+                if(err) {
+                    console.log('CONNECTION TO %s FAILED', host);
+                    return;
                 }
-            });
-            
-            client.useEnvelope({
-                from: connection.from,
-                to: [user]
+
+                console.log('CONNECTED TO %s', host);
+
+                client.on("rcptFailed", function(addresses){
+                    console.log("The following addresses were rejected: ", addresses);
+                });
+
+                client.on("message", function(){
+                    console.log('SENDING OUT MESSAGE');
+                    client.write(connection.data);
+                    client.end();
+                });
+
+                client.on("ready", function(success, response){
+                    if(success){
+                        console.log("The message was transmitted successfully with "+response);
+                    } else {
+                        console.log('MESSAGE FAILED', arguments);
+                    }
+                });
+
+                client.useEnvelope({
+                    from: connection.from,
+                    to: [user]
+                });
             });
         });
     });
