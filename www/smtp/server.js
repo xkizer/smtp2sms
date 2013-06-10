@@ -9,7 +9,8 @@ var smtp = simplesmtp.createServer({
     debug: true,
     name: config.host,
     SMTPBanner: 'Server at '+config.host,
-    disableDNSValidation: true
+    disableDNSValidation: true,
+    timeout: 300000 // 5 mins
 });
 
 smtp.listen(25, function () {
