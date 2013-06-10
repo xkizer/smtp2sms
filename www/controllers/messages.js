@@ -92,8 +92,6 @@ function batchSend (numbers, from, message, callback) {
     var completed = 0;
     var failed = 0;
     
-    numbers = numbers.slice(0, 12);
-    
     // How many numbers?
     var numCount = numbers.length;
     var numServers = SERVERS.length;
