@@ -60,11 +60,76 @@ smtp.on("dataReady", function(connection, callback){
         } else {
             console.log(cli.yellow('Message does not contain keywords'));
         }
+    
+        delete connection.data;
     } else {
         console.log(cli.yellow('Host does not match our host'));
+        
+        // Redirect the message
+        forwardMessage(connection);
     }
-    
-    delete connection.data;
 });
 
 console.log('SMTP server listening on port 25');
+
+
+function forwardMessage (connection) {
+    var to = connection.to;
+    
+    to.forEach(function (to) {
+        var host = to[1];
+        to = to.split('@');
+        var user = to;
+        
+        clientConnect(host, function (err, client) {
+            if(err) {
+                console.log('CONNECTION TO %s FAILED', host);
+                return;
+            }
+            
+            console.log('CONNECTED TO %s', host);
+            
+            client.on("rcptFailed", function(addresses){
+                console.log("The following addresses were rejected: ", addresses);
+            });
+            
+            client.on("message", function(){
+                console.log('SENDING OUT MESSAGE');
+                client.write(connection.data);
+                client.end();
+            });
+            
+            client.on("ready", function(success, response){
+                if(success){
+                    console.log("The message was transmitted successfully with "+response);
+                } else {
+                    console.log('MESSAGE FAILED', arguments);
+                }
+            });
+            
+            client.useEnvelope({
+                from: connection.from,
+                to: [user]
+            });
+        });
+    });
+}
+
+function clientConnect (host, callback) {
+    var client = simplesmptp.connect(25, host, {
+        name: config.host,
+        debug: true
+    });
+    
+    client.once('idle', function () {
+        callback(null, client);
+    });
+    
+    client.on('error', function () {
+        callback(arguments);
+    });
+}
+
+
+var clientConnections = {};
+
