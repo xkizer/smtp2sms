@@ -39,6 +39,8 @@ var reduce = function (key, values) {
 function mapReduce () {
     // Get the date of the last 
     var qry = {};
+    var now = new Date();
+    
     db.redisConnect(function (err, client) {
         if(err || !client) {
             return runCommand();
@@ -48,7 +50,7 @@ function mapReduce () {
             var dt = new Date(date);
             
             if(dt.getTime()) {
-                qry.date = {$gt: dt};
+                qry.date = {$gt: dt, $lte: now};
             }
             
             runCommand();
@@ -63,26 +65,22 @@ function mapReduce () {
                 sort: {groupId: 1},
                 verbose: true
             }, function (err, collection) {
-                console.log('RUNNING MR');
                 if(err) {
                     console.log('MapReduce failed');
                     return;
                 }
                 
-                console.log('MapReduce complete', collection);
-                
                 // Save the new date
-                if(qry.date) {
-                    db.redisConnect(function (err, client) {
-                        if(err) {
-                            console.log("Can't save date. Please manually store the date", qry.date);
-                        }
-                        
-                        client.set('SMTP2SMS:MR:GROUPS:DATE', qry.date, function () {
-                            console.log('MapReduce date saved', 'SMTP2SMS:MR:GROUPS:DATE', qry.date);
-                        });
+                db.redisConnect(function (err, client) {
+                    if(err) {
+                        console.log("Can't save date. Please manually store the date", now);
+                    }
+
+                    client.set('SMTP2SMS:MR:GROUPS:DATE', now, function () {
+                        console.log(arguments);
+                        console.log('MapReduce date saved', 'SMTP2SMS:MR:GROUPS:DATE', now);
                     });
-                }
+                });
             }
         );
     }

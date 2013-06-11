@@ -31,7 +31,7 @@
 
                 <div class="title-container">
                     <h1>Send Message</h1>
-                    <p>Total contacts selected: 407</p>
+                    <p>Total contacts selected: <span id="selected-contacts-count">0</span></p>
                 </div>
 
                 <div class="info-container">
@@ -98,11 +98,35 @@
 
     <script>
         jQuery(function ($) {
+            var countView = $('#selected-contacts-count');
+            
             $('.group-scroll-box').on('click mousedown mouseup keyup', function () {
                 var me = $(this),
                     chk = me.find(':checkbox');
-
+                
                 chk[0].checked ? me.addClass('active') : me.removeClass('active');
+                
+                // Count total contacts
+                var checked = [];
+                
+                $('.group-scroll-box :checked').each(function () {
+                    checked.push($(this).val());
+                });
+                
+                countView.text('calculating...');
+                
+                $.ajax({
+                    url: '/contacts/count',
+                    type: 'GET',
+                    data: {groups: checked},
+                    dataType: 'json',
+                    success: function (data) {
+                        countView.text(data.count);
+                    },
+                    error: function () {
+                        countView.text('server error');
+                    }
+                });
             }).trigger('mouseup');
             
             var txt = $('textarea');

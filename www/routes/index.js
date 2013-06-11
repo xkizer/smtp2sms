@@ -45,6 +45,7 @@ module.exports = function (app) {
     
     app.get('/contacts', listContacts);
     app.get('/contacts/list', getContacts);
+    app.get('/contacts/count', contactsCount);
     
     app.get('/messages/send', sendMessageForm);
     app.post('/messages/send', sendMessage);
@@ -663,6 +664,33 @@ function getContacts (req, res, next) {
     });
 }
 
+function contactsCount (req, res, next) {
+    var groups = req.query.groups;
+    
+    if(!Array.isArray(groups) || !groups.length) {
+        res.json({count: 0});
+    }
+    
+    req.requireLogin(function (user) {
+        contacts.getContacts(userId, groups, {/*TODO: Remove limit: 12*/}, function (err, contacts) {
+            var numbers = [],
+                len = contacts.length,
+                contact, number;
+            
+            for(var i = 0; i < len; i++) {
+                contact = contacts[i];
+                number = contact.phone;
+                
+                if(numbers.indexOf(number) < 0) {
+                    numbers.push(number);
+                }
+            }
+            
+            res.json({count: numbers.length});
+        });
+    });
+}
+
 function sendMessageForm (req, res, next) {
     if(arguments.length > 3) {
         var err = arguments[3];
@@ -712,7 +740,7 @@ function sendMessage (req, res, next) {
         }
         
         // Get the contacts
-        contacts.getContacts(userId, groups, {/*TODO: Remove */limit: 12}, function (err, contacts) {
+        contacts.getContacts(userId, groups, {/*TODO: Remove limit: 12*/}, function (err, contacts) {
             var numbers = [],
                 len = contacts.length,
                 contact, number;

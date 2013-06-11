@@ -51,7 +51,7 @@ function sendMessage (number, from, message, callback) {
                 return callback('Blacklisted');
             }
             
-            var msgId = util.generateKey(12).toLowerCase();
+            var msgId = util.generateKey(8).toLowerCase();
 
             // Not blacklisted
             // Save the message details
