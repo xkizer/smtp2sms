@@ -119,7 +119,8 @@ function forwardMessage (connection) {
                         console.log('MESSAGE FAILED', arguments);
                     }
                 });
-
+                
+                console.log(cli.red('CONNECTION FROM'), connection.from);
                 client.useEnvelope({
                     from: connection.from,
                     to: [user]
