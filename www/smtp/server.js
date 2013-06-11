@@ -76,6 +76,8 @@ console.log('SMTP server listening on port 25');
 
 function forwardMessage (connection) {
     var to = connection.to;
+    var from = connection.from;
+    console.log(cli.red('CONNECTION FROM'), connection.from);
     
     to.forEach(function (to) {
         var user = to;
@@ -120,9 +122,8 @@ function forwardMessage (connection) {
                     }
                 });
                 
-                console.log(cli.red('CONNECTION FROM'), connection.from);
                 client.useEnvelope({
-                    from: connection.from,
+                    from: from,
                     to: [user]
                 });
             });
