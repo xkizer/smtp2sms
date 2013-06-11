@@ -51,7 +51,7 @@ function sendMessage (number, from, message, callback) {
                 return callback('Blacklisted');
             }
             
-            var msgId = util.generateKey(12);
+            var msgId = util.generateKey(12).toLowerCase();
 
             // Not blacklisted
             // Save the message details
@@ -68,7 +68,7 @@ function sendMessage (number, from, message, callback) {
                 
                 mailer.send({
                     to: address,
-                    subject: 'M',
+                    subject: '',
                     text: message,
                     from: {
                         email: '{0}@{1}'.format(msgId, config.host),

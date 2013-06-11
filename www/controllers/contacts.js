@@ -163,7 +163,7 @@ module.exports = {
                 return callback('Server error');
             }
             
-            log.findOne({messageId: String(messageId)}, function (err, msg) {
+            log.findOne({messageId: String(messageId).toLowerCase()}, function (err, msg) {
                 if(err) {
                     return callback('Server error');
                 }
