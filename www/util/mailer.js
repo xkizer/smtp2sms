@@ -29,7 +29,7 @@ module.exports = function () {
         }
         
         // Verify we have all necessary stuff in the mail
-        if(!mail.to || !mail.subject || (!mail.html && !mail.text)) {
+        if(!mail.to || ('string' !== typeof mail.subject) || (('string' !== typeof mail.html) && ('string' !== typeof mail.text))) {
             console.log(mail);
             return callback(0xB3A1);
         }
