@@ -99,6 +99,7 @@
     <script>
         jQuery(function ($) {
             var countView = $('#selected-contacts-count');
+            var ajax;
             
             $('.group-scroll-box').on('click mousedown mouseup keyup', function () {
                 var me = $(this),
@@ -113,9 +114,13 @@
                     checked.push($(this).val());
                 });
                 
+                if(ajax) {
+                    ajax.abort();
+                }
+                
                 countView.text('calculating...');
                 
-                $.ajax({
+                ajax = $.ajax({
                     url: '/contacts/count',
                     type: 'GET',
                     data: {groups: checked},
@@ -124,7 +129,7 @@
                         countView.text(data.count);
                     },
                     error: function () {
-                        countView.text('server error');
+                        //countView.text('server error');
                     }
                 });
             }).trigger('mouseup');

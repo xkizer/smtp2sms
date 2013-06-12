@@ -672,21 +672,12 @@ function contactsCount (req, res, next) {
     }
     
     req.requireLogin(function (user) {
-        contacts.getContacts(userId, groups, {/*TODO: Remove limit: 12*/}, function (err, contacts) {
-            var numbers = [],
-                len = contacts.length,
-                contact, number;
-            
-            for(var i = 0; i < len; i++) {
-                contact = contacts[i];
-                number = contact.phone;
-                
-                if(numbers.indexOf(number) < 0) {
-                    numbers.push(number);
-                }
+        contacts.countContacts(user.userData.userId, groups, function (err, contacts) {
+            if(err) {
+                return res.json({error: 1}, 500);
             }
             
-            res.json({count: numbers.length});
+            res.json({count: contacts});
         });
     });
 }

@@ -63,8 +63,27 @@ module.exports = {
         });
     },
     
-    countContacts: function (userId, callback) {
-        contactsCollection.find({userId: Number(userId)}, function (err, cursor) {
+    countContacts: function (userId, groupIds, callback) {
+        if(arguments.length < 3) {
+            callback = arguments[1];
+            groupIds = false;
+        }
+        
+        var qry = {userId: Number(userId)};
+        
+        if(Array.isArray(groupIds) && groupIds.length) {
+            var grps = [];
+            
+            groupIds.forEach(function (g) {
+                grps.push({
+                    groupId: String(g)
+                });
+            });
+            
+            qry['$or'] = grps;
+        }
+        
+        contactsCollection.find(qry, function (err, cursor) {
             if(err) {
                 return callback('Server error');
             }
