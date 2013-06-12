@@ -747,7 +747,7 @@ function sendMessage (req, res, next) {
             
             // Get the user's account balance
             if(user.userData.credits < numbers.length) {
-                return sendMessageForm (req, res, next, 'You do not have enough credit');
+                return sendMessageForm (req, res, next, 'You do not have enough credits');
             }
             
             // Send messages
