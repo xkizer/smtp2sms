@@ -41,25 +41,43 @@ module.exports = {
         var contactId = util.generateKey(12);
 
         // Add contact
-        contactsCollection.insert({
-            firstName: contact.firstName,
-            lastName: contact.lastName,
-            phone: phone,
-            userId: Number(userId),
-            contactId: contactId,
-            groupId: groups,
-            date: new Date()
-        }, function (err) {
+        contactsCollection.findOne({
+            phone: phone
+        }, function (err, cnt) {
             if(err) {
-                return callback('Server error');
+                return callback('Server failuer');
             }
+            
+            var date = (cnt && cnt.date) || new Date();
 
-            callback(null, contactId);
+            contactsCollection.update({
+                phone: phone
+            },{
+                $set: {
+                    firstName: contact.firstName,
+                    lastName: contact.lastName,
+                    userId: Number(userId),
+                    contactId: contactId,
+                    date: date
+                },
+                $addToSet: {
+                    groupId: {$each: groups}
+                }
+            }, {
+                upsert: true,
+                safe: true
+            }, function (err) {
+                if(err) {
+                    return callback('Server error');
+                }
 
-            if(mapreduce) {
-                // MapReduce should be triggered
-                mapReduce.groups();
-            }
+                callback(null, contactId);
+
+                if(mapreduce) {
+                    // MapReduce should be triggered
+                    mapReduce.groups();
+                }
+            });
         });
     },
     

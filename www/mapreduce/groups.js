@@ -50,7 +50,7 @@ function mapReduce () {
             var dt = new Date(date);
             
             if(dt.getTime()) {
-                qry.date = {$gt: dt, $lte: now};
+                //qry.date = {$gt: dt, $lte: now};
             }
             
             runCommand();
@@ -61,7 +61,7 @@ function mapReduce () {
         contacts.mapReduce(map, reduce,
             {
                 query: qry,
-                out: {reduce: 'groups.stats'},
+                out: 'groups.stats',
                 sort: {groupId: 1},
                 verbose: true
             }, function (err, collection) {
@@ -69,6 +69,8 @@ function mapReduce () {
                     console.log('MapReduce failed');
                     return;
                 }
+                
+                console.log('MAPREDUCE COMPLETED');
                 
                 // Save the new date
                 db.redisConnect(function (err, client) {
