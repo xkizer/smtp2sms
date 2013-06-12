@@ -30,6 +30,7 @@ module.exports = function () {
         
         // Verify we have all necessary stuff in the mail
         if(!mail.to || !mail.subject || (!mail.html && !mail.text)) {
+            console.log(mail);
             return callback(0xB3A1);
         }
         
