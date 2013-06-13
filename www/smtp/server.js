@@ -21,8 +21,8 @@ smtp.listen(25, function () {
 smtp.on("startData", function(connection){
     console.log("Message from:", connection.from);
     console.log("Message to:", connection.to);
-    connection.tmpFile = "/tmp/" + util.generateKey(24);
-    connection.saveStream = fs.createWriteStream(connection.tmpFile);
+//    connection.tmpFile = "/tmp/" + util.generateKey(24);
+//    connection.saveStream = fs.createWriteStream(connection.tmpFile);
     connection.data = '';
 });
 
