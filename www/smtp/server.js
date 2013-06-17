@@ -6,6 +6,9 @@ var simplesmtp = require("simplesmtp"),
     cli = require('cli-color'),
     dns = require('dns');
 
+var MailParser = require("mailparser").MailParser;
+var optoutRegexp = /\b(?:STOP|QUIT|UNSUBSCRIBE|CANCEL)\b/i;
+
 var smtp = simplesmtp.createServer({
     debug: true,
     name: config.host,
@@ -52,16 +55,28 @@ smtp.on("dataReady", function(connection, callback){
     if(to[1] === config.host) {
         // Message is for us, check the message content
         var data = connection.data;
-        
-        if(/(?:STOP|QUIT|UNSUBSCRIBE|CANCEL)/i.test(data.replace(/\r?\n/g, ' '))) {
-            // This is an opt-out message
-            contacts.blacklist(to[0], function () {
-                console.log('BLACKLIST:', arguments);
-            });
-        } else {
+        var mailparser = new MailParser();
+
+        mailparser.on("end", function(mail){
+            var text = mail.text;
+            var html = mail.html;
+            delete mail.attachments;
+            console.log(mail);
+
+            if(optoutRegexp.test(String(text).replace(/\r?\n/g, ' ')) || optoutRegexp.test(String(html).replace(/\r?\n/g, ' '))) {
+                // This is an opt-out message
+                contacts.blacklist(to[0], function () {
+                    console.log('BLACKLIST:', arguments);
+                });
+                
+                return;
+            }
+            
             console.log(cli.yellow('Message does not contain keywords'));
-        }
-    
+        });
+        
+        mailparser.write(data);
+        mailparser.end();
         delete connection.data;
     } else {
         console.log(cli.yellow('Host does not match our host'));
