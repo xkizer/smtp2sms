@@ -61,7 +61,13 @@ function registerServer () {
     var port = app.get('port');
     var configServer = process.env.CONFIG_SERVER;
     var configServerPort = process.env.CONFIG_SERVER_PORT;
-
+    
+    if(!configServer || !configServerPort) {
+        // Not set, don't register
+        console.log('NOT REGISTERING SERVER');
+        return;
+    }
+    
     // Make request
     var options = {
         hostname: configServer,
