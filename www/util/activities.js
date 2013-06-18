@@ -21,8 +21,8 @@ module.exports = {
         logActivity (userId, 'Passwordless login by {0}'.format(adminId), 'admin-login', {userId: Number(userId), adminId: Number(adminId)});
     },
     
-    message: function (userId, results) {
-        logActivity (userId, 'Sent messages. Completed: {0} Failed: {1}'.format(results.completed, results.failed), 'message', results);
+    message: function (userId, results, batch) {
+        logActivity (userId, 'Sent messages. Completed: {0} Failed: {1} Batch: {2}'.format(results.completed, results.failed, batch), 'message', results);
     },
     
     credits: function (userId, amount) {

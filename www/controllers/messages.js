@@ -87,7 +87,7 @@ function sendMessage (number, from, message, callback) {
     });
 }
 
-function batchSend (numbers, from, message, callback) {
+function batchSend (batchId, numbers, from, message, callback) {
     // Send messages
     var completed = 0;
     var failed = 0;
@@ -138,7 +138,8 @@ function batchSend (numbers, from, message, callback) {
             var d = {
                 from: from,
                 message: message,
-                numbers: nums
+                numbers: nums,
+                batchId: batchId
             };
             
             req.setHeader('content-type', 'application/json; charset=UTF-8');
@@ -156,7 +157,7 @@ function batchSend (numbers, from, message, callback) {
     }
 }
 
-function processBatch (numbers, from, message, callback) {
+function processBatch (batchId, numbers, from, message, callback) {
     // Send messages
     var completed = 0;
     var failed = 0;
@@ -165,6 +166,7 @@ function processBatch (numbers, from, message, callback) {
     console.log('FROM', from);
     console.log('MESSAGE', message);
     console.log('NUMBERS', numbers.length);
+    console.log('BATCH NUMBER', batchId);
     
     numbers.forEach(function (number) {
         sendMessage (number, from, message, function (err) {

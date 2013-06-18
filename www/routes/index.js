@@ -788,7 +788,9 @@ function sendMessage (req, res, next) {
                                         return sendMessageForm (req, res, next, 'Server failure');
                                     }
 
-                                    messages.batchSend(numbers, from, message, function (results) {
+                                    var batchId = util.generateKey(40);
+
+                                    messages.batchSend(batchId, numbers, from, message, function (results) {
                                         // Replenish the user's credits for the failed messages
                                         if(results.failed) {
                                             users.update({userId: userId}, {$inc: {credits: results.failed}}, function () {});
@@ -796,6 +798,7 @@ function sendMessage (req, res, next) {
 
                                         // Log the transaction
                                         log.insert({
+                                            batch: batchId,
                                             userId: userId,
                                             message: message,
                                             numbers: numbers,
@@ -804,8 +807,6 @@ function sendMessage (req, res, next) {
                                             date: new Date(),
                                             from: from
                                         }, function () {console.log(results);});
-                                        
-                                        activities.message(user.userData.userId, results);
                                     });
 
                                     return sendMessageForm (req, res, next, null, 'Your messages are being sent in the background');
@@ -822,7 +823,8 @@ function sendMessage (req, res, next) {
 
 function batchSend (req, res, next) {
     var data = req.body;
-    messages.processBatch (data.numbers, data.from, data.message, function (results) {
+    messages.processBatch (data.batchId, data.numbers, data.from, data.message, function (results) {
+        activities.message(data.from.userId, results, data.batchId);
         res.json(results);
     });
 }
