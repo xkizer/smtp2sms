@@ -52,6 +52,9 @@ module.exports = function (app) {
     app.post('/batchSend', batchSend);  // This is an internal resource
     
     app.post('/serverConfig', serverConfig);
+    
+    // API ROUTES
+    app.post('/api/messages/send', apiSendMessage);
 };
 
 function homePage (req, res, next) {
@@ -753,79 +756,190 @@ function sendMessage (req, res, next) {
             // Send messages
             var from = user.userData;
             
-            db.mongoConnect({db: 'mail2sms', collection: 'messages.log'}, function (err, log, mongo) {
+            db.mongoConnect({db: 'mail2sms', collection: 'messages.log'}, function (err, log) {
                 if(err) {
                     // Can't log
                     return sendMessageForm (req, res, next, 'Server failure');
                 }
                 
-                mongo.collection('users', function (err, users) {
-                    if(err) {
-                        // Can't deduct
-                        return sendMessageForm (req, res, next, 'Server failure');
+                var batchId = util.generateKey(40);
+
+                messages.batchSend(batchId, numbers, from, message, function (results) {
+                    // Replenish the user's credits for the failed messages
+                    if(results.failed) {
+                        users.update({userId: userId}, {$inc: {credits: results.failed}}, function () {});
                     }
-                    
-                    // Deduct the user's credits first
-                    users.update({userId: userId}, {$inc: {credits: -1 * numbers.length}}, function (err) {
-                        if(err) {
-                            // Couldn't deduct
-                            return sendMessageForm (req, res, next, 'Server failure');
-                        }
-                        
-                        db.redisConnect(function (err, redis) {
-                            if(err) {
-                                return sendMessageForm (req, res, next, 'Server failure');
-                            }
-                            
-                            // Delete the user from cache
-                            redis.del('auth:user:' + user.userData.userId, function (err) {
-                                if(err) {
-                                    return sendMessageForm (req, res, next, 'Server failure');
-                                }
-                        
-                                redis.del('auth:user:' + user.userData.username, function (err) {
-                                    if(err) {
-                                        return sendMessageForm (req, res, next, 'Server failure');
-                                    }
 
-                                    var batchId = util.generateKey(40);
-
-                                    messages.batchSend(batchId, numbers, from, message, function (results) {
-                                        // Replenish the user's credits for the failed messages
-                                        if(results.failed) {
-                                            users.update({userId: userId}, {$inc: {credits: results.failed}}, function () {});
-                                        }
-
-                                        // Log the transaction
-                                        log.insert({
-                                            batch: batchId,
-                                            userId: userId,
-                                            message: message,
-                                            numbers: numbers,
-                                            groups: groups,
-                                            results: results,
-                                            date: new Date(),
-                                            from: from
-                                        }, function () {console.log(results);});
-                                    });
-
-                                    return sendMessageForm (req, res, next, null, 'Your messages are being sent in the background');
-                                });
-                            });
-                        });
-                    });
+                    // Log the transaction
+                    log.insert({
+                        batch: batchId,
+                        userId: userId,
+                        message: message,
+                        numbers: numbers,
+                        groups: groups,
+                        results: results,
+                        date: new Date(),
+                        from: from
+                    }, function () {console.log(results);});
                 });
+
+                return sendMessageForm (req, res, next, null, 'Your messages are being sent in the background');
             });
         });
     });
 }
 
+function apiSendMessage (req, res, next) {
+    // Manually login user
+    var qry = req.query,
+        username = String(qry.username),
+        password = String(qry.password);
+    
+    var data = req.body;
+    var groups = data.groups;
+    var message = data.message;
+    
+    if(!'object' === typeof data) {
+        res.json({error: {code: 1023, message: 'No suitable data found.'}}, 401);
+        return;
+    }
+    
+    if(!Array.isArray(groups) || !groups.length) {
+        res.json({error: {code: 1028, message: 'Please provide the groups as an array.'}}, 401);
+        return;
+    }
+        
+    if('string' !== typeof message || !message.length) {
+        res.json({error: {code: 1013, message: 'Message can\'t be empty.'}}, 401);
+        return;
+    }
+
+    if(message.length > config.maxMessageLength) {
+        res.json({error: {code: 1032, message: 'Your message must be at most ' + config.maxMessageLength + ' characters long'}}, 401);
+        return;
+    }
+    
+    auth.login(username, password, function (err, details) {
+        if(err) {
+            res.json({error: err}, 401);
+            return;
+        }
+        
+        var userId = details.userId;
+        
+        // Get the contacts
+        contacts.getContacts(userId, groups, {/*TODO: Remove limit: 12*/}, function (err, contacts) {
+            if(err) {
+                res.json({error: {code: 0x34E, message: 'Server error'}}, 401);
+                return;
+            }
+            
+            var numbers = [],
+                len = contacts.length,
+                contact, number;
+            
+            for(var i = 0; i < len; i++) {
+                contact = contacts[i];
+                number = contact.phone;
+                
+                if(numbers.indexOf(number) < 0) {
+                    numbers.push(number);
+                }
+            }
+            
+            // Get the user's account balance
+            if(details.credits < numbers.length) {
+                return res.json({error: {code: 0x34A, message: 'You do not have enough credits'}}, 401);
+            }
+            
+            // Send messages
+            var from = details;
+            
+            db.mongoConnect({db: 'mail2sms', collection: 'messages.log'}, function (err, log, mongo) {
+                if(err) {
+                    // Can't log
+                    return res.json({error: {code: 0x34E, message: 'Server error'}}, 401);
+                }
+                    
+                var batchId = util.generateKey(40);
+
+                from.api = true;
+                
+                messages.batchSend(batchId, numbers, from, message, function (results) {
+                    // Log the transaction
+                    log.insert({
+                        batch: batchId,
+                        userId: userId,
+                        message: message,
+                        numbers: numbers,
+                        groups: groups,
+                        results: results,
+                        date: new Date(),
+                        from: from,
+                        api: true
+                    }, function () {console.log(results);});
+                });
+
+                return res.json({success: true, message: 'Messages are have been queued up'}, 401);
+            });
+        });
+    });
+}
 
 function batchSend (req, res, next) {
-    var data = req.body;
-    messages.processBatch (data.batchId, data.numbers, data.from, data.message, function (results) {
-        activities.message(data.from.userId, results, data.batchId);
-        res.json(results);
+    var data = req.body,
+        count = data.numbers.length;
+    
+    db.mongoConnect({db: 'mail2sms', collection: 'users'}, function (err, users, mongo) {
+        if(err) {
+            // Can't log
+            return res.json({completed: 0, failed: count}, 401);
+        }
+                    
+        // Deduct the user's credits first
+        users.update({userId: userId}, {$inc: {credits: -1 * data.numbers.length}}, function (err) {
+            if(err) {
+                // Couldn't deduct
+                return res.json({completed: 0, failed: count}, 401);
+            }
+
+            db.redisConnect(function (err, redis) {
+                if(err) {
+                    return res.json({completed: 0, failed: count}, 401);
+                }
+
+                // Delete the user from cache
+                redis.del('auth:user:' + details.userId, function (err) {
+                    if(err) {
+                        return res.json({completed: 0, failed: count}, 401);
+                    }
+
+                    redis.del('auth:user:' + details.username, function (err) {
+                        if(err) {
+                            return res.json({completed: 0, failed: count}, 401);
+                        }
+
+
+                        messages.processBatch (data.batchId, data.numbers, data.from, data.message, function (results) {
+                            // Replenish the user's credits for the failed messages
+                            if(results.failed) {
+                                users.update({userId: userId}, {$inc: {credits: results.failed}}, function () {
+                                    console.log('Replenished user\'s credits for %d failed messages', results.failed);
+                                });
+                            }
+
+                            if(data.from.api) {
+                                activities.apiMessage(data.from.userId, results, data.batchId);
+                            } else {
+                                activities.message(data.from.userId, results, data.batchId);
+                            }
+                            
+                            res.json(results);
+                        });
+                    });
+                });
+            });
+        });
     });
 }
 

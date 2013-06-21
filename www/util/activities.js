@@ -25,6 +25,10 @@ module.exports = {
         logActivity (userId, 'Sent messages. Completed: {0} Failed: {1} Batch: {2}'.format(results.completed, results.failed, batch), 'message', results);
     },
     
+    apiMessage: function (userId, results, batch) {
+        logActivity (userId, 'Sent messages from API. Completed: {0} Failed: {1} Batch: {2}'.format(results.completed, results.failed, batch), 'api-message', results);
+    },
+    
     credits: function (userId, amount) {
         logActivity (userId, '{0} credits remaining'.format(amount), 'credits', Number(amount));
     },

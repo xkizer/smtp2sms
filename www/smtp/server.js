@@ -10,7 +10,7 @@ var MailParser = require("mailparser").MailParser;
 var optoutRegexp = /\b(?:STOP|QUIT|UNSUBSCRIBE|CANCEL)\b/i;
 
 var smtp = simplesmtp.createServer({
-    debug: true,
+    debug: false, /** ******************* **/
     name: config.host,
     SMTPBanner: 'Server at '+config.host,
     disableDNSValidation: true,
@@ -22,8 +22,8 @@ smtp.listen(25, function () {
 });
 
 smtp.on("startData", function(connection){
-    console.log("Message from:", connection.from);
-    console.log("Message to:", connection.to);
+//    console.log("Message from:", connection.from);
+//    console.log("Message to:", connection.to);
 //    connection.tmpFile = "/tmp/" + util.generateKey(24);
 //    connection.saveStream = fs.createWriteStream(connection.tmpFile);
     connection.data = '';
@@ -36,8 +36,8 @@ smtp.on("data", function(connection, chunk){
 
 smtp.on("dataReady", function(connection, callback){
     //connection.saveStream.end();
-    console.log("Incoming message saved to %s", connection.tmpFile);
-    callback(null, "ABC1"); // ABC1 is the queue id to be advertised to the client
+//    console.log("Incoming message saved to %s", connection.tmpFile);
+    callback(null, "{0}-{1}-{2}-{3}".format(util.generateKey(8), util.generateKey(4), util.generateKey(4), util.generateKey(6))); // ABC1 is the queue id to be advertised to the client
     // callback(new Error("Rejected as spam!")); // reported back to the client
     
     // Check if this message is for us
@@ -61,7 +61,7 @@ smtp.on("dataReady", function(connection, callback){
             var text = mail.text;
             var html = mail.html;
             delete mail.attachments;
-            console.log(mail);
+//            console.log(mail);
 
             if(optoutRegexp.test(String(text).replace(/\r?\n/g, ' ')) || optoutRegexp.test(String(html).replace(/\r?\n/g, ' '))) {
                 // This is an opt-out message
@@ -124,16 +124,16 @@ function forwardMessage (connection) {
                 });
 
                 client.on("message", function(){
-                    console.log('SENDING OUT MESSAGE');
+//                    console.log('SENDING OUT MESSAGE');
                     client.write(connection.data);
                     client.end();
                 });
 
                 client.on("ready", function(success, response){
                     if(success){
-                        console.log("The message was transmitted successfully with "+response);
+//                        console.log("The message was transmitted successfully with "+response);
                     } else {
-                        console.log('MESSAGE FAILED', arguments);
+//                        console.log('MESSAGE FAILED', arguments);
                     }
                 });
                 
@@ -149,7 +149,7 @@ function forwardMessage (connection) {
 function clientConnect (host, callback) {
     var client = simplesmtp.connect(25, host, {
         name: config.host,
-        debug: true
+        debug: false
     });
     
     client.once('idle', function () {
