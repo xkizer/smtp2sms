@@ -765,11 +765,6 @@ function sendMessage (req, res, next) {
                 var batchId = util.generateKey(40);
 
                 messages.batchSend(batchId, numbers, from, message, function (results) {
-                    // Replenish the user's credits for the failed messages
-                    if(results.failed) {
-                        users.update({userId: userId}, {$inc: {credits: results.failed}}, function () {});
-                    }
-
                     // Log the transaction
                     log.insert({
                         batch: batchId,
