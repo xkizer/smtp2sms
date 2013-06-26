@@ -875,7 +875,7 @@ function apiSendMessage (req, res, next) {
                     }, function () {console.log(results);});
                 });
 
-                return res.json({success: true, message: 'Messages are have been queued up'}, 401);
+                return res.json({success: true, message: 'Messages have been queued up'}, 401);
             });
         });
     });
