@@ -32,8 +32,6 @@ module.exports = function (app) {
     
     app.get('/admin/account/activity/:clientId', clientActivities);
     
-    app.get('/groups/add', addGroup);
-    app.post('/groups/add', addGroupForm);
     app.post('/groups', addGroupJSON);
     app.put('/groups/:groupId', updateGroupJSON);
     app.delete('/groups/:groupId', deleteGroupJSON);
@@ -55,6 +53,7 @@ module.exports = function (app) {
     
     // API ROUTES
     app.post('/api/messages/send', apiSendMessage);
+    app.get('/api/groups', apiGetGroups);
 };
 
 function homePage (req, res, next) {
@@ -347,33 +346,6 @@ function clientActivities (req, res, next) {
     });
 }
 
-function addGroupForm (req, res, next) {
-    req.requireLogin(function (user) {
-        if(arguments.length > 3) {
-            var err = arguments[3];
-
-            if(arguments.length > 4) {
-                var success = arguments[4];
-            }
-        }
-
-        res.render('user/add-group', {user: user.userData, error: err && (err.message || err), success: success, addGroup: true});
-    });
-}
-
-function addGroup (req, res, next) {
-    req.requireLogin(function (user) {
-        groups.addGroup(user.userData.userId, req.body.name, function (err, groupId) {
-            if(err) {
-                return addGroupForm(req, res, next, err);
-            }
-            
-            activities.addGroup(user.userData.userId, groupId, req.body.name);
-            return addGroupForm(req, res, next, null, groupId);
-        });
-    });
-}
-
 function addGroupJSON (req, res, next) {
     req.requireLogin(function (user) {
         groups.addGroup(user.userData.userId, req.body.name, function (err, groupId) {
@@ -650,6 +622,37 @@ function listContacts (req, res, next) {
                 
                 res.render('contacts/contacts', {user: user.userData, totalContacts: count, groups: groups, error: err && (err.message || err)});
             });
+        });
+    });
+}
+
+function apiGetGroups (req, res, next) {
+    // Manually login user
+    var qry = req.query,
+        username = String(qry.username),
+        password = String(qry.password);
+    
+    auth.login(username, password, function (err, details) {
+        if(err) {
+            res.json({error: err}, 401);
+            return;
+        }
+        
+        var userId = details.userId;
+        
+        groups.statGroups(userId, function (error, groups) {
+            if(error) {
+                return res.json({error: error}, 401);
+            }
+            
+            if(groups) {
+                groups.forEach(function (group) {
+                    delete group._id;
+                    delete group.userId;
+                });
+            }
+            
+            res.json({success: true, groups: groups});
         });
     });
 }
