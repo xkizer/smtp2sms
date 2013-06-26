@@ -883,7 +883,8 @@ function apiSendMessage (req, res, next) {
 
 function batchSend (req, res, next) {
     var data = req.body,
-        count = data.numbers.length;
+        count = data.numbers.length,
+        userId = data.from.userId;
     
     db.mongoConnect({db: 'mail2sms', collection: 'users'}, function (err, users, mongo) {
         if(err) {
@@ -898,41 +899,21 @@ function batchSend (req, res, next) {
                 return res.json({completed: 0, failed: count}, 401);
             }
 
-            db.redisConnect(function (err, redis) {
-                if(err) {
-                    return res.json({completed: 0, failed: count}, 401);
+            messages.processBatch (data.batchId, data.numbers, data.from, data.message, function (results) {
+                // Replenish the user's credits for the failed messages
+                if(results.failed) {
+                    users.update({userId: userId}, {$inc: {credits: results.failed}}, function () {
+                        console.log('Replenished user\'s credits for %d failed messages', results.failed);
+                    });
                 }
 
-                // Delete the user from cache
-                redis.del('auth:user:' + details.userId, function (err) {
-                    if(err) {
-                        return res.json({completed: 0, failed: count}, 401);
-                    }
+                if(data.from.api) {
+                    activities.apiMessage(userId, results, data.batchId);
+                } else {
+                    activities.message(userId, results, data.batchId);
+                }
 
-                    redis.del('auth:user:' + details.username, function (err) {
-                        if(err) {
-                            return res.json({completed: 0, failed: count}, 401);
-                        }
-
-
-                        messages.processBatch (data.batchId, data.numbers, data.from, data.message, function (results) {
-                            // Replenish the user's credits for the failed messages
-                            if(results.failed) {
-                                users.update({userId: userId}, {$inc: {credits: results.failed}}, function () {
-                                    console.log('Replenished user\'s credits for %d failed messages', results.failed);
-                                });
-                            }
-
-                            if(data.from.api) {
-                                activities.apiMessage(data.from.userId, results, data.batchId);
-                            } else {
-                                activities.message(data.from.userId, results, data.batchId);
-                            }
-                            
-                            res.json(results);
-                        });
-                    });
-                });
+                res.json(results);
             });
         });
     });
