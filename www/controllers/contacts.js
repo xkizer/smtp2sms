@@ -37,7 +37,6 @@ module.exports = {
         if(phone.length !== 10) {
             var ph = /^(?:\+?1)?([0-9]{10})$/.exec(phone);
             
-            console.log('hop 1');
             if(ph) {
                 phone = ph[1];
             } else {
@@ -45,7 +44,6 @@ module.exports = {
             }
         }
         
-            console.log('hop 2');
         var contactId = util.generateKey(12);
 
         // Add contact

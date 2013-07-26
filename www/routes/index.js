@@ -588,19 +588,13 @@ function addContacts (req, res, next) {
                 
                 // Sit back and relax, this is gonna take a while
                 contacts.batchUpload(user.userData.userId, cnts, groups, function (err, results) {
-            console.log('hop A');
                     if(err || !file) {
                         // Error
                         return addContactsForm(req, res, next, 'Server error');
                     }
-            console.log('hop B');
-                    
-                    console.log(results);
                     
                     activities.addContacts(user.userData.userId, uploadId, contcts.length, groups);
-            console.log('hop C');
                     res.redirect('/contacts/add?success=true');
-            console.log('hop D');
                     
                     // Delete the temorary contact
                     //collection.remove({uploadId: uploadId}, console.log);
