@@ -35,7 +35,13 @@ module.exports = {
         var phone = String(contact.phone).replace(/[^0-9]/, '');
         
         if(phone.length !== 10) {
-            return callback('Phone number has to be exactly 10 digits');
+            var ph = /^(?:\+?1)?([0-9]{10})$/.exec(phone);
+            
+            if(ph) {
+                phone = ph[1];
+            } else {
+                return callback('Phone number has to be exactly 10 digits');
+            }
         }
         
         var contactId = util.generateKey(12);
@@ -177,7 +183,6 @@ module.exports = {
         contacts.forEach(function (person) {
             module.exports.addContact(userId, {groups: groups, phone: person}, false, function (err) {
                 if(err) {
-                    console.log(err);
                     failure++;
                 } else {
                     success++;
