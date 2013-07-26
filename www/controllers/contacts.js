@@ -73,7 +73,7 @@ module.exports = {
                 }
             }, {
                 upsert: true,
-                safe: true
+                safe: false
             }, function (err) {
                 if(err) {
                     return callback('Server error');
@@ -189,8 +189,6 @@ module.exports = {
                 } else {
                     success++;
                 }
-                
-                console.log(success, failure, success + failure, count);
                 
                 if(success + failure === count) {
                     // Done
