@@ -177,6 +177,7 @@ module.exports = {
         contacts.forEach(function (person) {
             module.exports.addContact(userId, {groups: groups, phone: person}, false, function (err) {
                 if(err) {
+                    console.log(err);
                     failure++;
                 } else {
                     success++;
