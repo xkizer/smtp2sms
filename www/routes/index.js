@@ -593,6 +593,8 @@ function addContacts (req, res, next) {
                         return addContactsForm(req, res, next, 'Server error');
                     }
                     
+                    console.log(results);
+                    
                     activities.addContacts(user.userData.userId, uploadId, contcts.length, groups);
                     res.redirect('/contacts/add?success=true');
                     
