@@ -190,6 +190,8 @@ module.exports = {
                     success++;
                 }
                 
+                console.log(success, failure, success + failure, count);
+                
                 if(success + failure === count) {
                     // Done
                     callback(null, {succeeded: success, failed: failure});
