@@ -616,7 +616,9 @@ function listContacts (req, res, next) {
                 err = error;
             }
             
+            console.log('Counting contacts');
             contacts.countContacts(user.userData.userId, function (error, count) {
+                console.log(count);
                 if(error) {
                     err = error;
                 }
@@ -796,7 +798,7 @@ function apiSendGroupMessage (req, res, next) {
         groups = data.groups || data.group,
         message = data.message;
     
-    if(!'object' === typeof data) {
+    if('object' !== typeof data) {
         res.json({error: {code: 1023, message: 'No suitable data found.'}}, 401);
         return;
     }
@@ -896,7 +898,7 @@ function apiSendMessage (req, res, next) {
     var numbers = data.number || data.numbers;
     var message = data.message;
     
-    if(!'object' === typeof data) {
+    if('object' !== typeof data) {
         res.json({error: {code: 1023, message: 'No suitable data found.'}}, 401);
         return;
     }
