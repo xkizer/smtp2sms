@@ -53,6 +53,7 @@ module.exports = function (app) {
     
     // API ROUTES
     app.post('/api/messages/send', apiSendMessage);
+    app.post('/api/messages/send/group', apiSendGroupMessage);
     app.get('/api/groups', apiGetGroups);
 };
 
@@ -787,7 +788,7 @@ function sendMessage (req, res, next) {
     });
 }
 
-function apiSendMessage (req, res, next) {
+function apiSendGroupMessage (req, res, next) {
     // Manually login user
     var qry = req.query,
         username = String(qry.username),
@@ -878,8 +879,88 @@ function apiSendMessage (req, res, next) {
                     }, function () {console.log(results);});
                 });
 
-                return res.json({success: true, message: 'Messages have been queued up'}, 401);
+                return res.json({success: true, message: 'Messages have been queued up'});
             });
+        });
+    });
+}
+
+function apiSendGroupMessage (req, res, next) {
+    // Manually login user
+    var qry = req.query,
+        username = String(qry.username),
+        password = String(qry.password);
+    
+    var data = req.body;
+    var numbers = data.number || data.numbers;
+    var message = data.message;
+    
+    if(!'object' === typeof data) {
+        res.json({error: {code: 1023, message: 'No suitable data found.'}}, 401);
+        return;
+    }
+    
+    if(!numbers) {
+        res.json({error: {code: 1128, message: 'Missing receipients.'}}, 401);
+        return;
+    }
+    
+    if('string' === typeof numbers) {
+        numbers = [numbers];
+    }
+        
+    if('string' !== typeof message || !message.length) {
+        res.json({error: {code: 1013, message: 'Message can\'t be empty.'}}, 401);
+        return;
+    }
+
+    if(message.length > config.maxMessageLength) {
+        res.json({error: {code: 1032, message: 'Your message must be at most ' + config.maxMessageLength + ' characters long'}}, 401);
+        return;
+    }
+    
+    auth.login(username, password, function (err, details) {
+        if(err) {
+            res.json({error: err}, 401);
+            return;
+        }
+        
+        var userId = details.userId;
+        
+        // Get the user's account balance
+        if(details.credits < numbers.length) {
+            return res.json({error: {code: 0x34A, message: 'You do not have enough credits'}}, 401);
+        }
+
+        // Send messages
+        var from = details;
+
+        db.mongoConnect({db: 'mail2sms', collection: 'messages.log'}, function (err, log, mongo) {
+            if(err) {
+                // Can't log
+                return res.json({error: {code: 0x34E, message: 'Server error'}}, 401);
+            }
+
+            var batchId = util.generateKey(40);
+
+            from.api = true;
+
+            messages.batchSend(batchId, numbers, from, message, function (results) {
+                // Log the transaction
+                log.insert({
+                    batch: batchId,
+                    userId: userId,
+                    message: message,
+                    numbers: numbers,
+                    groups: null,
+                    results: results,
+                    date: new Date(),
+                    from: from,
+                    api: true
+                }, function () {console.log(results);});
+            });
+
+            return res.json({success: true, message: 'Messages have been queued up'});
         });
     });
 }
