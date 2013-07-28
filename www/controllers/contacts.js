@@ -180,8 +180,10 @@ module.exports = {
             success = 0,
             failure = 0;
         
+        console.log('Initiated batch upload', count);
         contacts.forEach(function (person) {
             module.exports.addContact(userId, {groups: groups, phone: person}, false, function (err) {
+                console.log('Contact added', success, failure, success + failure);
                 if(err) {
                     failure++;
                 } else {
