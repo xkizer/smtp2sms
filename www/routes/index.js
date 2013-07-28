@@ -22,6 +22,7 @@ module.exports = function (app) {
     
     app.get('/login', loginForm);
     app.post('/login', login);
+    app.get('/logout', logout);
     
     app.get('/admin/account/create', accountCreateForm);
     app.post('/admin/account/create', accountCreate);
@@ -99,6 +100,17 @@ function login (req, res, next) {
             
             activities.login(details.userId);
         });
+    });
+}
+
+function logout (req, res, next) {
+    req.logout(function (err) {
+        if(err) {
+            res.send('Could not log out', 500);
+            res.end();
+        } else {
+            res.redirect('/');
+        }
     });
 }
 
