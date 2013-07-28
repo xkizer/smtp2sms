@@ -15,6 +15,9 @@ db.mongoConnect({db: 'mail2sms', collection: 'contacts'}, function (err, cnt, db
 
 module.exports = {
     addContact: function (userId, contact, mapreduce, callback) {
+        var uniq = Math.random();
+        console.log(uniq);
+        console.time(uniq);
         var groups = contact.groups;
         contact = contact.phone;
         
@@ -51,7 +54,7 @@ module.exports = {
             phone: phone
         }, function (err, cnt) {
             if(err) {
-                return callback('Server failuer');
+                return callback('Server failure');
             }
             
             var date = (cnt && cnt.date) || new Date();
@@ -76,8 +79,8 @@ module.exports = {
                 if(err) {
                     return callback('Server error');
                 }
-
-                console.log('Contact created', mapreduce);
+                
+                console.timeEnd(uniq);
                 callback(null, contactId);
 
                 if(mapreduce) {
@@ -183,9 +186,7 @@ module.exports = {
         
         console.log('Initiated batch upload', count);
         contacts.forEach(function (person) {
-            console.log('Queued', person);
             module.exports.addContact(userId, {groups: groups, phone: person}, false, function (err) {
-                console.log('Contact added', success, failure, success + failure);
                 if(err) {
                     failure++;
                 } else {
