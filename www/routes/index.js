@@ -566,8 +566,17 @@ function addContacts (req, res, next) {
             groups = [groups];
         }
         
+        console.log('Adding contacts...');
         db.mongoConnect({db: 'mail2sms', collection: 'contacts.tmp'}, function (err, collection) {
+            console.log('Connected to DB');
+            if(err) {
+                // Error
+                return addContactsForm(req, res, next, 'Server error');
+            }
+
             collection.findOne({uploadId: uploadId}, function (err, file) {
+                console.log('Retrieved upload info...');
+                
                 if(err || !file) {
                     // Error
                     return addContactsForm(req, res, next, 'Server error');
@@ -588,7 +597,9 @@ function addContacts (req, res, next) {
                 }
                 
                 // Sit back and relax, this is gonna take a while
+                console.log('Running batch upload...');
                 contacts.batchUpload(user.userData.userId, cnts, groups, function (err, results) {
+                    console.log('Batch upload complete...', results);
                     if(err || !file) {
                         // Error
                         return addContactsForm(req, res, next, 'Server error');
