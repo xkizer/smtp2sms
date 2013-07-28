@@ -711,9 +711,10 @@ function sendMessageForm (req, res, next) {
 
 function sendMessage (req, res, next) {
     req.requireLogin(function (user) {
-        var post = req.body;
-        var groups = post.groups;
-        var userId = user.userData.userId;
+        var post = req.body,
+            groups = post.groups,
+            userId = user.userData.userId,
+            message = post.message;
         
         // Check if any group was selected
         if(!groups || !groups.length) {
@@ -721,8 +722,6 @@ function sendMessage (req, res, next) {
         }
         
         // Check if message was entered
-        var message = post.message;
-        
         if('string' !== typeof message) {
             return sendMessageForm (req, res, next, 'Invalid parameters');
         }
@@ -741,9 +740,9 @@ function sendMessage (req, res, next) {
         contacts.getContacts(userId, groups, {/*TODO: Remove limit: 12*/}, function (err, contacts) {
             var numbers = [],
                 len = contacts.length,
-                contact, number;
+                contact, number, i = 0;
             
-            for(var i = 0; i < len; i++) {
+            for(; i < len; i++) {
                 contact = contacts[i];
                 number = contact.phone;
                 
@@ -792,11 +791,10 @@ function apiSendGroupMessage (req, res, next) {
     // Manually login user
     var qry = req.query,
         username = String(qry.username),
-        password = String(qry.password);
-    
-    var data = req.body;
-    var groups = data.groups;
-    var message = data.message;
+        password = String(qry.password),
+        data = req.body,
+        groups = data.groups,
+        message = data.message;
     
     if(!'object' === typeof data) {
         res.json({error: {code: 1023, message: 'No suitable data found.'}}, 401);
@@ -861,7 +859,6 @@ function apiSendGroupMessage (req, res, next) {
                 }
                     
                 var batchId = util.generateKey(40);
-
                 from.api = true;
                 
                 messages.batchSend(batchId, numbers, from, message, function (results) {
