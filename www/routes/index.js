@@ -793,7 +793,7 @@ function apiSendGroupMessage (req, res, next) {
         username = String(qry.username),
         password = String(qry.password),
         data = req.body,
-        groups = data.groups,
+        groups = data.groups || data.group,
         message = data.message;
     
     if(!'object' === typeof data) {
@@ -801,8 +801,12 @@ function apiSendGroupMessage (req, res, next) {
         return;
     }
     
+    if('string' === typeof groups && groups) {
+        groups = [groups];
+    }
+    
     if(!Array.isArray(groups) || !groups.length) {
-        res.json({error: {code: 1028, message: 'Please provide the groups as an array.'}}, 401);
+        res.json({error: {code: 1028, message: 'Please provide valid groups to send message to.'}}, 401);
         return;
     }
         
