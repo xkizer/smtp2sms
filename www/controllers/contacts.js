@@ -77,6 +77,7 @@ module.exports = {
                     return callback('Server error');
                 }
 
+                console.log('Contact created', mapreduce);
                 callback(null, contactId);
 
                 if(mapreduce) {
