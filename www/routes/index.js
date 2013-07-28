@@ -882,7 +882,7 @@ function apiSendGroupMessage (req, res, next) {
     });
 }
 
-function apiSendGroupMessage (req, res, next) {
+function apiSendMessage (req, res, next) {
     // Manually login user
     var qry = req.query,
         username = String(qry.username),
