@@ -606,13 +606,11 @@ function addContacts (req, res, next) {
                     }
                     
                     activities.addContacts(user.userData.userId, uploadId, contcts.length, groups);
+                    res.redirect('/contacts/add?success=true');
                     
                     // Delete the temorary contact
                     //collection.remove({uploadId: uploadId}, console.log);
                 });
-                
-                // Return before upload is complete
-                res.redirect('/contacts/add?success=true');
             });
         });
     });

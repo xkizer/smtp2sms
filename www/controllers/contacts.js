@@ -16,7 +16,6 @@ db.mongoConnect({db: 'mail2sms', collection: 'contacts'}, function (err, cnt, db
 module.exports = {
     addContact: function (userId, contact, mapreduce, callback) {
         var uniq = Math.random();
-        console.log(uniq);
         console.time(uniq);
         var groups = contact.groups;
         contact = contact.phone;
