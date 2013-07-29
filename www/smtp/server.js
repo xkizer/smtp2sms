@@ -120,7 +120,9 @@ function forwardMessage (connection) {
                 console.log('CONNECTED TO %s', host);
 
                 client.on("rcptFailed", function(addresses){
-                    console.log("The following addresses were rejected: ", addresses);
+                    if(addresses && addresses.length) {
+                        console.log("The following addresses were rejected: ", addresses);
+                    }
                 });
 
                 client.on("message", function(){
