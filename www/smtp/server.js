@@ -135,6 +135,13 @@ function forwardMessage (connection) {
                     } else {
 //                        console.log('MESSAGE FAILED', arguments);
                     }
+                    
+                    try {
+                        connection.close();
+                    } catch(e) {
+                        console.log('CANNOT CLOSE CONNECTION');
+                        console.log(connection);
+                    }
                 });
                 
                 client.useEnvelope({
