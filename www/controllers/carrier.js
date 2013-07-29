@@ -5,7 +5,7 @@ var crypto = require('crypto'),
 require('../util/extend');
 
 var service1Regexp = /<h2 class="searchTitle">Carrier: <\/h2>(.*?)<br/i;
-var numBreak = /([0-9]{3})([0-9]{3})([0-9]{4})/;
+var numBreak = /([0-9]{3})([0-9]{3})([0-9]{4})$/;
 var service2Regexp = /(?:<A HREF='http:\/\/fonefinder\.net\/(.+?)\.php'>)?([^<>]+?)(?:<\/A>)?<TD>([^<]+?)<TD><A HREF='findcity\.php/i;
 var apiRegexp  = /<carrier id="([0-9]+)">(.+?)<\/carrier>/;
 
@@ -189,6 +189,11 @@ function freeService1 (number, callback) {
 function freeService2 (number, callback) {
     number = String(number);
     number = numBreak.exec(number);
+    
+    if(!number) {
+        console.log('INVALID NUMBER FROMAT', number);
+        return callback('Wrong number format' + number);
+    }
     
     var options = {
       hostname: 'www.fonefinder.net',
