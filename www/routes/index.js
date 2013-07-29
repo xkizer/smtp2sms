@@ -768,8 +768,6 @@ function sendMessage (req, res, next) {
                 return sendMessageForm (req, res, next, 'Server error. Please try again.');
             }
             
-            console.log('CONTACTS', contacts);
-            
             var numbers = [],
                 len = contacts.length,
                 contact, number, i = 0;
