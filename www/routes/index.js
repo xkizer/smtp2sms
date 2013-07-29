@@ -763,6 +763,11 @@ function sendMessage (req, res, next) {
         
         // Get the contacts
         contacts.getContacts(userId, groups, {/*TODO: Remove limit: 12*/}, function (err, contacts) {
+            if(err) {
+                console.log(err);
+                return sendMessageForm (req, res, next, 'Server error. Please try again.');
+            }
+            
             var numbers = [],
                 len = contacts.length,
                 contact, number, i = 0;
