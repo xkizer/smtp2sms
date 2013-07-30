@@ -95,7 +95,8 @@ function batchSend (batchId, numbers, from, message, callback) {
     // How many numbers?
     var numCount = numbers.length;
     var numServers = SERVERS.length;
-    var msgPerServer = Math.ceil(numCount / numServers);
+    var MAX_MESSAGE_PER_BATCH = 200;
+    var msgPerServer = Math.min(Math.ceil(numCount / numServers), MAX_MESSAGE_PER_BATCH);
     var http = require('http');
     var completed = 0;
     
@@ -103,52 +104,60 @@ function batchSend (batchId, numbers, from, message, callback) {
         var nums = numbers.splice(0, msgPerServer);
         var server = SERVERS[i];
         
-        (function (nums, server) {
-            var data = '';
-
-            // Make request
-            var options = {
-                hostname: server.host,
-                port: server.port,
-                path: '/batchSend',
-                method: 'POST'
-            };
-            
-            var req = http.request(options, function(res) {
-                res.setEncoding('utf8');
-
-                res.on('data', function (chunk) {
-                    data += chunk;
-                });
-
-                res.on('end', function () {
-                    data = JSON.parse(data);
-                    completed += data.completed;
-                    failed += data.failed;
-                    doCheck();
-                });
-            });
-
-            req.on('error', function(e) {
-                console.log('problem with server: ', e);
-                failed += nums.length;
-                doCheck();
-            });
-            
-            var d = {
-                from: from,
-                message: message,
-                numbers: nums,
-                batchId: batchId
-            };
-            
-            req.setHeader('content-type', 'application/json; charset=UTF-8');
-            req.write(JSON.stringify(d));
-            req.end();
-        })(nums, server);
+        processThisBatch(nums, server);
     }
-    
-    function doCheck () {
+
+    function processThisBatch (nums, server) {
+        var data = '';
+
+        // Make request
+        var options = {
+            hostname: server.host,
+            port: server.port,
+            path: '/batchSend',
+            method: 'POST'
+        };
+
+        var req = http.request(options, function(res) {
+            res.setEncoding('utf8');
+
+            res.on('data', function (chunk) {
+                data += chunk;
+            });
+
+            res.on('end', function () {
+                data = JSON.parse(data);
+                completed += data.completed;
+                failed += data.failed;
+                doCheck(server);
+            });
+        });
+
+        req.on('error', function(e) {
+            console.log('problem with server: ', e);
+            failed += nums.length;
+            doCheck(server);
+        });
+
+        var d = {
+            from: from,
+            message: message,
+            numbers: nums,
+            batchId: batchId
+        };
+
+        req.setHeader('content-type', 'application/json; charset=UTF-8');
+        req.write(JSON.stringify(d));
+        req.end();
+    }
+
+    function doCheck (server) {
+        var nums = numbers.splice(0, msgPerServer);
+        
+        if(nums && nums.length) {
+            return processThisBatch(nums, server);
+        }
+        
         numServers--;
         
         if(numServers === 0) {
