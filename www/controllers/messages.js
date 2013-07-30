@@ -2,7 +2,8 @@ var carriers = require('./carrier'),
     db = require('../util/db'),
     mailer = require('../util/mailer')(),
     util = require('../util/util'),
-    config = require('../config');
+    config = require('../config'),
+    activities = require('../util/activities');
 
 require('../util/extend');
 
