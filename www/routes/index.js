@@ -1022,12 +1022,6 @@ function batchSend (req, res, next) {
                     });
                 }
 
-                if(data.from.api) {
-                    activities.apiMessage(userId, results, data.batchId);
-                } else {
-                    activities.message(userId, results, data.batchId);
-                }
-
                 res.json(results);
             });
         });

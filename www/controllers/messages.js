@@ -162,6 +162,12 @@ function batchSend (batchId, numbers, from, message, callback) {
         
         if(numServers === 0) {
             callback({completed: completed, failed: failed});
+
+            if(from.api) {
+                activities.apiMessage(from.userId, {completed: completed, failed: failed}, batchId);
+            } else {
+                activities.message(from.userId, {completed: completed, failed: failed}, batchId);
+            }
         }
     }
 }
