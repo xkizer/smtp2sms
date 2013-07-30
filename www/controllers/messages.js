@@ -91,6 +91,7 @@ function batchSend (batchId, numbers, from, message, callback) {
     // Send messages
     var completed = 0;
     var failed = 0;
+    var startTime = new Date();
     
     // How many numbers?
     var numCount = numbers.length;
@@ -168,6 +169,11 @@ function batchSend (batchId, numbers, from, message, callback) {
             } else {
                 activities.message(from.userId, {completed: completed, failed: failed}, batchId);
             }
+            
+            var endTime = new Date();
+            var totalTime = endTime - startTime;
+            console.log('%d messages sent in %d seconds using %d servers.', numCount, totalTime/1000, SERVERS.length);
+            console.log('%d messages per second. %d messages per second per server.', numCount/(totalTime/1000), numCount/(totalTime*SERVERS.length/1000));
         }
     }
 }
